@@ -6,31 +6,31 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
-# --- 1.1. Définition du schéma d'entrée pour la calculatrice avec Pydantic ---
+# --- 1.1. Definition of the input schema for the calculator with Pydantic ---
 class CalculatorInput(BaseModel):
-    """Schema pour l'entrée de l'outil Calculatrice."""
+    """Schema for the input of the calculator tool."""
     expression: str = Field(
-        description="L'expression mathématique à évaluer, par exemple: '2 + 2 * 3'. "
-                    "Doit être une expression numérique valide."
+        description="The mathematical expression to evaluate, for example: '2 + 2 * 3'. "
+                    "Must be a valid numerical expression."
     )
 
-# --- 1.2. Fonction d'outil 'calculatrice' ---
+# --- 1.2. Tool function 'calculator' ---
 def Calculator(expression: str) -> str:
     """
-    Exécute une expression mathématique simple et retourne le résultat.
+    Executes a simple mathematical expression and returns the result.
     """
 
-    logger.info(f"Outil 'calculatrice' appelé avec l'expression: '{expression}'")
+    logger.info(f"Tool 'calculator' called with the expression: '{expression}'")
     try:
         result = str(ne.evaluate(expression))
-        logger.info(f"Résultat de l'expression '{expression}': {result}")
+        logger.info(f"Result of the expression '{expression}': {result}")
         return result
     except SyntaxError:
-        logger.error(f"Erreur de syntaxe dans l'expression '{expression}'.")
+        logger.error(f"Syntax error in the expression '{expression}'.")
         return "Erreur de syntaxe : L'expression mathématique est mal formée."
     except ZeroDivisionError:
-        logger.error(f"Erreur : Division par zéro dans l'expression '{expression}'.")
-        return "Erreur mathématique : Division par zéro."
+        logger.error(f"Error : Division by zero in the expression '{expression}'.")
+        return "Mathematical error : Division by zero."
     except Exception as e:
-        logger.error(f"Erreur inattendue lors du calcul de l'expression '{expression}': {e}")
-        return f"Erreur de calcul : {e}"
+        logger.error(f"Unexpected error when calculating the expression '{expression}': {e}")
+        return f"Calculation error : {e}"
