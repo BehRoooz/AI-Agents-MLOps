@@ -10,8 +10,9 @@ logger = logging.getLogger(__name__)
 
 def get_cpu_metrics_node(state: AgentState):
     logger.info("Node 'get_cpu_metrics' : Fetching CPU metrics.")
-    metrics = get_system_metrics("CPU")
+    CPU = get_system_metrics("CPU")
+    memory = get_system_metrics("memory") # Fetching memory metrics
     return {
-        "messages": [AIMessage(content=f"CPU metrics retrieved: {metrics}")],
-        "system_metrics": {"CPU": metrics},
+        "messages": [AIMessage(content=f"CPU metrics retrieved: CPU: {CPU}, memory: {memory}")],
+        "system_metrics": {"CPU": CPU, "memory": memory},
     }
