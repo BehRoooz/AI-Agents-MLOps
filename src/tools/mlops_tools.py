@@ -34,6 +34,8 @@ def check_alert_severity(alert_description: str) -> Literal["critical", "medium"
     alert_description_lower = alert_description.lower()
     if "critical" in alert_description_lower or "outage" in alert_description_lower or "down" in alert_description_lower:
         return "critical"
+    elif "urgent" in alert_description_lower or "emergency" in alert_description_lower:
+        return "urgent"
     elif "warning" in alert_description_lower or "high" in alert_description_lower or "elevated" in alert_description_lower:
         return "medium"
     else:
