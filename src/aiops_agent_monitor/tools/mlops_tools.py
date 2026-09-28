@@ -11,10 +11,25 @@ from langchain_core.tools import tool
 
 logger = logging.getLogger(__name__)
 
+
 # --- Base URLs for monitoring services ---
 PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus:9090") 
 LOKI_URL = os.getenv("LOKI_URL", "http://loki:3100") 
 GRAFANA_URL = os.getenv("GRAFANA_URL", "http://grafana:3000") 
+
+# --- Allowed PromQL functions ---
+ALLOWED_PROMQL_FUNCTIONS = {
+    "rate", "irate", "sum", "avg", "min", "max", "count", "increase", "delta", "avg_over_time", "max_over_time"
+}
+
+# --- Valid PromQL functions ---
+def validate_promql_query(query: str) -> None:
+    """Validate the PromQL query to ensure it only contains allowed functions."""
+    functions_used = set(re.findall(r'(\w+)\(', query))
+    disallowed_functions = functions_used - ALLOWED_PROMQL_FUNCTIONS
+    
+    if disallowed_functions:
+        raise ValueError(f"Disallowed PromQL functions found: {disallowed_functions}.")
 
 # --- Prometheus Query Tool ---
 class PrometheusQueryInput(BaseModel):
@@ -41,6 +56,11 @@ def PrometheusQuery(query: str, time_range_minutes: int, step_seconds: int, targ
             raise ValueError("time_range_minutes must be positive.")
         if step_seconds <= 0:
             raise ValueError("step_seconds must be positive.")
+        if step_seconds < 10:
+            raise ValueError("step_seconds must be at least 10 seconds.")
+
+        # Validate the PromQL query
+        validate_promql_query(query)
 
         full_query = query
         end_time = int(time.time())
